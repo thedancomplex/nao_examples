@@ -5,6 +5,9 @@
 import sys
 from naoqi import ALProxy
 import time
+import math
+import forwardKinematics 
+
 def StiffnessOn(proxy):
     # We use the "Body" name to signify the collection of all joints
     pNames = "Body"
@@ -36,23 +39,32 @@ def main(robotIP):
     time.sleep(2.0)
 
     # We use the "Body" name to signify the collection of all joints and actuators
-    pNames = "Body"
+    pNames = "RArm"
 
     # Get the Number of Joints
     numBodies = len(motionProxy.getBodyNames(pNames))
     print motionProxy.getBodyNames(pNames)
-
-    # We prepare a collection of floats
     pTargetAngles = [0.0] * numBodies
-    pTargetAngles[2] = 1.57
-    pTargetAngles[20] = 1.57
+    pTargetAngles[0] = 45.0
+    pTargetAngles[1] = 0
+    pTargetAngles[2] = 0
+    pTargetAngles[3] = 0
+    resultingT = forwardKinematics.createTransforms(pTargetAngles,pNames)
+
     # We set the fraction of max speed
     pMaxSpeedFraction = 0.3
+    pTargetAnglesRad = [0.0] * numBodies
+    for a in range(len(pTargetAngles)):
+	pTargetAnglesRad[a] = math.radians(pTargetAngles[a])
 
-    print pNames
+    print "Angle values assigned in radians",pTargetAnglesRad
+
     # Ask motion to do this with a blocking call
-    motionProxy.angleInterpolationWithSpeed(pNames, pTargetAngles, pMaxSpeedFraction)
-
+    motionProxy.setAngles(pNames, pTargetAnglesRad, pMaxSpeedFraction)
+    encoderAngles = motionProxy.getAngles(pNames,True)
+    print(encoderAngles)
+    #rotationMatrixExample.createTransforms(encoderAngles,pNames)
+    time.sleep(3.0)
 
 if __name__ == "__main__":
     robotIp = "127.0.0.1"
