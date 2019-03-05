@@ -1,10 +1,11 @@
 import numpy
 import math
+#import mds_ik
 
-thetaZero=45
-thetaOne=-10
+thetaZero=0.0
+thetaOne=0
 thetaTwo=0.0
-thetaThree=10
+thetaThree=0
 thetaFour=0.0
 
 l0=1
@@ -23,23 +24,23 @@ HandOffsetZ     =12.31
 def createTransformation(lengths,theta,axis):
 	# different rotation matrices for each axis
 	if(axis=='z'):
-       		Rtemp = numpy.array([[math.cos(math.radians(theta)),-math.sin(math.radians(theta)),0,0],
-                	[math.sin(math.radians(theta)),math.cos(math.radians(theta)),0,0],
-                	[0,0,1,0],
-                	[0,0,0,1]])
-        	Ptemp = numpy.array([[1,0,0,lengths[0]],[0,1,0,lengths[1]],[0,0,1,lengths[2]],[0,0,0,1]])
-        elif(axis=='y'):
+		Rtemp = numpy.array([[math.cos(math.radians(theta)),-math.sin(math.radians(theta)),0,0],
+		[math.sin(math.radians(theta)),math.cos(math.radians(theta)),0,0],
+		[0,0,1,0],
+		[0,0,0,1]])
+		Ptemp = numpy.array([[1,0,0,lengths[0]],[0,1,0,lengths[1]],[0,0,1,lengths[2]],[0,0,0,1]])
+	elif(axis=='y'):
 		Rtemp = numpy.array([[math.cos(math.radians(theta)),0,math.sin(math.radians(theta)),0],
-                        [0,1,0,0],
-			[-math.sin(math.radians(theta)),0,math.cos(math.radians(theta)),0],
-                        [0,0,0,1]])
-                Ptemp = numpy.array([[1,0,0,lengths[0]],[0,1,0,lengths[1]],[0,0,1,lengths[2]],[0,0,0,1]])
+		[0,1,0,0],
+		[-math.sin(math.radians(theta)),0,math.cos(math.radians(theta)),0],
+		[0,0,0,1]])
+		Ptemp = numpy.array([[1,0,0,lengths[0]],[0,1,0,lengths[1]],[0,0,1,lengths[2]],[0,0,0,1]])
 	elif(axis=='x'):
 		Rtemp = numpy.array([[1,0,0,0],
-			[0,math.cos(math.radians(theta)),-math.sin(math.radians(theta)),0],
-                        [0,math.sin(math.radians(theta)),math.cos(math.radians(theta)),0],
-                        [0,0,0,1]])
-                Ptemp = numpy.array([[1,0,0,lengths[0]],[0,1,0,lengths[1]],[0,0,1,lengths[2]],[0,0,0,1]])
+		[0,math.cos(math.radians(theta)),-math.sin(math.radians(theta)),0],
+		[0,math.sin(math.radians(theta)),math.cos(math.radians(theta)),0],
+		[0,0,0,1]])
+		Ptemp = numpy.array([[1,0,0,lengths[0]],[0,1,0,lengths[1]],[0,0,1,lengths[2]],[0,0,0,1]])
 
 	return numpy.matmul(Rtemp,Ptemp)
 
@@ -50,9 +51,9 @@ def matMullTransformation(listOTs):
 	for a in range(len(listOTs)-1):
 		if(a == 0):
 			# need this first case to give TRes a first value to use
-			TRes = numpy.matmul(listOTs[a],listOTs[a+1])
+			TRes = numpy.dot(listOTs[a],listOTs[a+1])
 		else:
-			TRes = numpy.matmul(TRes,listOTs[a+1])
+			TRes = numpy.dot(TRes,listOTs[a+1])
 	return TRes
 
 # creates the transforms for either the Right Arm or the Left Arm
@@ -61,47 +62,45 @@ def createTransforms(targetAngles,body):
 	if(body == "RArm"):
 		# create base to shoulder transformation
 		#RightShoulderPitch
-		TRSP = createTransformation([0,0,0],targetAngles[0], axis='y')
-
+		TRSP = createTransformation([0,-ShoulderOffsetY,0],targetAngles[0], axis='y')
 		#RightShoulderRoll
-		TRSR = createTransformation([0,0,0],targetAngles[1], axis='z')
+		TRSR = createTransformation([0,0,0],targetAngles[1], axis='x')
 		#RElbowYaw
-		TREY = createTransformation([UpperArmLength,ElbowOffsetY,0],targetAngles[2], axis='x')
+		TREY = createTransformation([0,0,-UpperArmLength],targetAngles[2], axis='z')
 		#RElbowRoll
-		TRER = createTransformation([0,0,0],targetAngles[3],axis='z')
+		TRER = createTransformation([0,0,0],targetAngles[3],axis='x')
 		#RWristYaw
-		TRWY = createTransformation([LowerArmLength,0,0],targetAngles[4],axis='x')
+		TRWY = createTransformation([0,0,-LowerArmLength],targetAngles[4],axis='z')
 		#Transform from writst to hand(EndEffector)
-		TWH = createTransformation([HandOffsetX,0,-HandOffsetZ],targetAngles[5],'x')
-
+		TWH = createTransformation([0.0,0,-HandOffsetX],targetAngles[5],axis='x')
 		res = matMullTransformation([TRSP,TRSR,TREY,TRER,TRWY,TWH])
-		#print(res)
+		#print(TWH)
 		print("End Effector X:",res[0,3])# x
-		print("End Effector Y:",(res[1,3]-ShoulderOffsetY))# y
+		print("End Effector Y:",(res[1,3]))# y
 		print("End Effector Z:",res[2,3])# z
 		return res
 
 	elif(body=="LArm"):
 		# create base to shoulder transformation
 		#LeftShoulderPitch
-		TLSP = createTransformation([0,0,0],targetAngles[0], axis='y')
+		TLSP = createTransformation([0,ShoulderOffsetY,0],targetAngles[0], axis='y')
 
 		#LeftShoulderRoll
-		TLSR = createTransformation([0,0,0],targetAngles[1], axis='z')
+		TLSR = createTransformation([0,0,0],targetAngles[1], axis='x')
 		#LElbowYaw
-		TLEY = createTransformation([UpperArmLength,-ElbowOffsetY,0],targetAngles[2], axis='x')
+		TLEY = createTransformation([0.0,0.0,-UpperArmLength],targetAngles[2], axis='x')
 		#LElbowRoll
-		TLER = createTransformation([0,0,0],targetAngles[3],axis='z')
+		TLER = createTransformation([0,0,0],targetAngles[3],axis='x')
 		#LWristYaw
-		TLWY = createTransformation([LowerArmLength,0,0],targetAngles[4],axis='x')
+		TLWY = createTransformation([0.0,0,-LowerArmLength],targetAngles[4],axis='z')
 		#Transform from writst to hand(EndEffector)
-		TWH = createTransformation([HandOffsetX,0,-HandOffsetZ],targetAngles[5],'x')
+		TWH = createTransformation([0.0,0,-HandOffsetX],targetAngles[5],'x')
 
 		res = matMullTransformation([TLSP,TLSR,TLEY,TLER,TLWY,TWH])
 		#print(res)
 		print("End Effector X:",res[0,3])# x
-		print("End Effector Y:",(res[1,3]+ShoulderOffsetY))# y
+		print("End Effector Y:",(res[1,3]))# y
 		print("End Effector Z:",res[2,3])# z
 		return res
 
-#createTransforms([thetaZero,thetaOne,thetaTwo,thetaThree,thetaFour,0],"LArm")
+createTransforms([70,10,10,10,0,0],"RArm")
