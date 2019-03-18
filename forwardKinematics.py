@@ -72,7 +72,7 @@ def createTransforms(targetAngles,body):
 		#RWristYaw
 		TRWY = createTransformation([0,0,-LowerArmLength],targetAngles[4],axis='z')
 		#Transform from writst to hand(EndEffector)
-		TWH = createTransformation([0.0,0,-HandOffsetX],targetAngles[5],axis='x')
+		TWH = createTransformation([0.0,0,-HandOffsetX],0,axis='x')
 		res = matMullTransformation([TRSP,TRSR,TREY,TRER,TRWY,TWH])
 		#print(TWH)
 		print("End Effector X:",res[0,3])# x
@@ -84,7 +84,6 @@ def createTransforms(targetAngles,body):
 		# create base to shoulder transformation
 		#LeftShoulderPitch
 		TLSP = createTransformation([0,ShoulderOffsetY,0],targetAngles[0], axis='y')
-
 		#LeftShoulderRoll
 		TLSR = createTransformation([0,0,0],targetAngles[1], axis='x')
 		#LElbowYaw
@@ -94,7 +93,7 @@ def createTransforms(targetAngles,body):
 		#LWristYaw
 		TLWY = createTransformation([0.0,0,-LowerArmLength],targetAngles[4],axis='z')
 		#Transform from writst to hand(EndEffector)
-		TWH = createTransformation([0.0,0,-HandOffsetX],targetAngles[5],'x')
+		TWH = createTransformation([0.0,0,-HandOffsetX],0,'x')
 
 		res = matMullTransformation([TLSP,TLSR,TLEY,TLER,TLWY,TWH])
 		#print(res)
@@ -103,4 +102,4 @@ def createTransforms(targetAngles,body):
 		print("End Effector Z:",res[2,3])# z
 		return res
 
-createTransforms([70,10,10,10,0,0],"RArm")
+createTransforms([45,10,0,0,0,0],"LArm")
