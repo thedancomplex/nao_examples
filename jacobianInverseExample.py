@@ -1,11 +1,13 @@
 import numpy
 import math
+import copy
+import forwardKinematics
 
-l0,l1,l2 = 1.5,1.2,1.5
-theta0,theta1,theta2=0,10,80 # starting theta
-thetaOld = numpy.array([theta0,theta1])
-startingPoint = 0,0
-desiredPoint = 1.3,1.8 # meters
+thetaOld = numpy.zeros(5)
+OG = numpy.array([154.6,98,-25])
+desiredPoint = numpy.array([154.6,98,-25]) # mmeters
+jointSpaceStart = numpy.array([20,20,20,20,0])
+print("desired: ",desiredPoint)
 b=0.0 # this will need to change base on the new values when iterating
 
 def createTransformation(lengths,theta,axis):
@@ -43,112 +45,118 @@ def matMullTransformation(listOTs):
 			TRes = numpy.matmul(TRes,listOTs[a+1])
 	return TRes
 
-joint0 = createTransformation([l0,0,0],theta0,'z')
-joint1 = createTransformation([l1,0,0],theta1,'z')
-#joint2 = createTransformation([l2,0,0],theta2,'z')
-base = matMullTransformation([joint0,joint1])
-print base
-startingPoint = base[0,3],base[1,3]
-print startingPoint
-def createJacobian():
-	global joint0,joint1,joint2
-	dTheta = .001 # degrees
-	theta0Prime = theta0 + dTheta
-	theta1Prime = theta1 + dTheta
-	theta2Prime = theta2 + dTheta
+def checkArmJoints(Arm_t,jointList):
+	temp = jointList
+	if(Arm_t == "RArm"):
+		if(jointList[0] < -119.5):
+			temp[0] = -119.5
+		elif(jointList[0] > 119.5):
+			temp[0] = 119.5
+		if(jointList[1] > 18):
+			temp[1] = 18
+		elif(jointList[1] < -76):
+			temp[1] = -76
+		if(jointList[2] < -119.5):
+			temp[2] = -119.5
+		elif(jointList[2] > 119.5):
+			temp[2] = 119.5
+		if(jointList[3] < 2):
+			jointList[3] = 2
+		elif(jointList[3] > 88.5):
+			jointList[3] = 88.5
+		if(jointList[4] > 104.5):
+			jointList[4] = 104.5
+		elif(jointList[4] < -104.5):
+			jointList[4] = -104.5
+	elif(Arm_t == "LArm"):
+		if(jointList[0] < -119.5):
+			temp[0] = -119.5
+		elif(jointList[0] > 119.5):
+			temp[0] = 119.5
+		if(jointList[1] > 76):
+			temp[1] = 76
+		elif(jointList[1] < -18):
+			temp[1] = -18
+		if(jointList[2] < -119.5):
+			temp[2] = -119.5
+		elif(jointList[2] > 119.5):
+			temp[2] = 119.5
+		if(jointList[3] < -88.5):
+			jointList[3] = -88.5
+		elif(jointList[3] > -2):
+			jointList[3] = -2
+		if(jointList[4] > 104.5):
+			jointList[4] = 104.5
+		elif(jointList[4] < -104.5):
+			jointList[4] = -104.5
+	return temp
 
-	PPrime0 = createTransformation([l0,0,0],(theta0Prime),'z')
-	PPrime1 = createTransformation([l1,0,0],theta1,'z')
-	#PPrime2 = createTransformation([l2,0,0],theta2,'z')
+def createJacobian(Arm_t,di):
+	# need a 5x3 for nao arms
+	dTheta = .001
+	J = numpy.zeros((3,5))
 
-	basePrime = matMullTransformation([PPrime0,PPrime1])
-	#print("theta0Prime:")
-	#print(basePrime)
-	dexdTheta0 = (basePrime[0,3] - base[0,3])/dTheta
-	deydTheta0 = (basePrime[1,3] - base[1,3])/dTheta
-
-	PPrime0 = createTransformation([l0,0,0],theta0,'z')
-	PPrime1 = createTransformation([l1,0,0],(theta1Prime),'z')
-	#PPrime2 = createTransformation([l2,0,0],theta2,'z')
-
-	basePrime = matMullTransformation([PPrime0,PPrime1])
-	#print("theta1Prime:")
-	#print(basePrime)
-	dexdTheta1 = (basePrime[0,3] - base[0,3])/dTheta
-	deydTheta1 = (basePrime[1,3] - base[1,3])/dTheta
-
-	PPrime0 = createTransformation([l0,0,0],theta0,'z')
-	PPrime1 = createTransformation([l1,0,0],theta1,'z')
-	#PPrime2 = createTransformation([l2,0,0],(theta2Prime),'z')
-
-	#basePrime = matMullTransformation([PPrime0,PPrime1,PPrime2])
-	#print("theta2Prime:")
-	#print(basePrime)
-	#dexdTheta2 = (basePrime[0,3] - base[0,3])/dTheta
-	#deydTheta2 = (basePrime[1,3] - base[1,3])/dTheta
-
-	J = numpy.zeros((2,2))
-	J = numpy.array([[dexdTheta0,dexdTheta1],[deydTheta0,deydTheta1]])
-
-	#J = numpy.array([[dexdTheta0,dexdTheta1]#,dexdTheta2],
-	#		[deydTheta0, deydTheta1]])#,deydTheta2]])
-
-	#print(J)
+	for a in range(3):
+		for b in range(5):
+			diPrime = copy.deepcopy(di)
+			diPrime[b] = di[b] + dTheta
+			A = forwardKinematics.createTransforms(di,Arm_t)
+			APrime = forwardKinematics.createTransforms(diPrime,Arm_t)			
+			J[a,b] = (APrime[a,3] - A[a,3])/dTheta
 	return J
 
-J = createJacobian()
-Jinverse = numpy.linalg.inv(J)
+Arm_t = "LArm"
+start = forwardKinematics.createTransforms(jointSpaceStart,Arm_t)
+startingPoint = numpy.zeros(3)
+startingPoint[0] = start[0,3]
+startingPoint[1] = start[1,3]
+startingPoint[2] = start[2,3]
+J = createJacobian(Arm_t,jointSpaceStart)
+Jinverse = numpy.linalg.pinv(J)
 #print Jinverse
-newPos = numpy.zeros(2)
-newPos[0] = startingPoint[0]
-newPos[1] = startingPoint[1]
+print(startingPoint)
+currentPoint = startingPoint
+thetaOld = jointSpaceStart
+found  = 0
+firstJointSet = None
+for a in range(10000):
+	J = createJacobian(Arm_t,thetaOld)
+	print("joints",thetaOld)
+	Jinverse = numpy.linalg.pinv(J)
+	offset = desiredPoint - currentPoint;
+	distanceOffset = numpy.sqrt((offset[0]*offset[0])+(offset[1]*offset[1])+(offset[2]*offset[2]))
+	DEffector = (offset/distanceOffset) * .1
+	#print(DEffector)
 
-print(newPos)
-for a in range(4000):
-	diffY,diffX = (desiredPoint[1]-newPos[1]),(desiredPoint[0]-newPos[0])
-	slope=abs(diffY/diffX)
-	print "slope",slope
-
-	if(diffY > diffX):
-		if(diffY >0):
-			newY = .001
-		else:
-			newY = -.001
-		if(diffX >0):
-			newX = (newY-b)/(slope)
-		else:
-			newX = -(newY-b)/(slope)
-
-	else:
-		if(diffX >0):
-			newX = .001
-		else:
-			newX = -.001
-		if(diffY > 0):
-			newY = (slope)*newX + b
-		else:
-			newY = -(slope)*newX + b
-
-	#print newX, newY
-	newPos[0] = newX# - newPos[0]
-	newPos[1] = newY# - newPos[1]
-	print newPos
-	dThetaJ = numpy.matmul(Jinverse,newPos)
+	dThetaJ = numpy.matmul(Jinverse,DEffector)
 	#print "change in theta", dThetaJ
 	thetaNew = thetaOld + dThetaJ
+	thetaNew2 = checkArmJoints(Arm_t,thetaNew)
 	#print thetaNew
-	joint0 = createTransformation([l0,0,0],thetaNew[0],'z')
-	joint1 = createTransformation([l1,0,0],thetaNew[1],'z')
-	#joint2 = createTransformation([l2,0,0],theta2,'z')
-	baseP = matMullTransformation([joint0,joint1])
+	
+	A = forwardKinematics.createTransforms(thetaNew2,Arm_t)
+	
+	newP = numpy.zeros(3)
+	newP[0] = A[0,3]
+	newP[1] = A[1,3]
+	newP[2] = A[2,3]
+	temp = desiredPoint - newP
 
-	newP = numpy.zeros(2)
-	newP[0] = baseP[0,3] # set the x
-	newP[1] = baseP[1,3] # set the y
+	distanceOffset = numpy.sqrt(math.pow(temp[0],2) + math.pow(temp[1],2) + math.pow(temp[2],2))
 	print "new points",newP
-	if(math.sqrt(math.pow(desiredPoint[0]-newP[0],2)+math.pow(desiredPoint[1]-newP[1],2))<.01):
+	print "distance offset",distanceOffset
+	if(distanceOffset<1 and found ==0):
+		print "found it at: ",a
+		firstJointSet = thetaNew
+		print(thetaNew)
+		desiredPoint = OG + numpy.array([50,0,0])
+		found += 1
+	elif(distanceOffset<1 and found ==1):
 		print "found it at: ",a
 		print(thetaNew)
-		break
-	newPos = newP
-	thetaOld = thetaNew
+		print(firstJointSet)
+		print(desiredPoint)
+		found += 1
+		break;
+	currentPoint = newP
+	thetaOld = thetaNew2

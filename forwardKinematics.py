@@ -66,18 +66,18 @@ def createTransforms(targetAngles,body):
 		#RightShoulderRoll
 		TRSR = createTransformation([0,0,0],targetAngles[1], axis='x')
 		#RElbowYaw
-		TREY = createTransformation([0,0,-UpperArmLength],targetAngles[2], axis='z')
+		TREY = createTransformation([0,0,UpperArmLength],targetAngles[2], axis='z')
 		#RElbowRoll
 		TRER = createTransformation([0,0,0],targetAngles[3],axis='x')
 		#RWristYaw
-		TRWY = createTransformation([0,0,-LowerArmLength],targetAngles[4],axis='z')
+		TRWY = createTransformation([0,0,LowerArmLength],targetAngles[4],axis='z')
 		#Transform from writst to hand(EndEffector)
-		TWH = createTransformation([0.0,0,-HandOffsetX],0,axis='x')
+		TWH = createTransformation([0.0,0,HandOffsetX],0,axis='x')
 		res = matMullTransformation([TRSP,TRSR,TREY,TRER,TRWY,TWH])
 		#print(TWH)
-		print("End Effector X:",res[0,3])# x
-		print("End Effector Y:",(res[1,3]))# y
-		print("End Effector Z:",res[2,3])# z
+		#print("End Effector X:",res[0,3])# x
+		#print("End Effector Y:",(res[1,3]))# y
+		#print("End Effector Z:",res[2,3])# z
 		return res
 
 	elif(body=="LArm"):
@@ -87,19 +87,19 @@ def createTransforms(targetAngles,body):
 		#LeftShoulderRoll
 		TLSR = createTransformation([0,0,0],targetAngles[1], axis='x')
 		#LElbowYaw
-		TLEY = createTransformation([0.0,0.0,-UpperArmLength],targetAngles[2], axis='x')
+		TLEY = createTransformation([0.0,0.0,UpperArmLength],targetAngles[2], axis='x')
 		#LElbowRoll
 		TLER = createTransformation([0,0,0],targetAngles[3],axis='x')
 		#LWristYaw
-		TLWY = createTransformation([0.0,0,-LowerArmLength],targetAngles[4],axis='z')
+		TLWY = createTransformation([0.0,0,LowerArmLength],targetAngles[4],axis='z')
 		#Transform from writst to hand(EndEffector)
-		TWH = createTransformation([0.0,0,-HandOffsetX],0,'x')
+		TWH = createTransformation([0.0,0,HandOffsetX],0,'x')
 
 		res = matMullTransformation([TLSP,TLSR,TLEY,TLER,TLWY,TWH])
 		#print(res)
-		print("End Effector X:",res[0,3])# x
-		print("End Effector Y:",(res[1,3]))# y
-		print("End Effector Z:",res[2,3])# z
+		#print("End Effector X:",res[0,3])# x
+		#print("End Effector Y:",(res[1,3]))# y
+		#print("End Effector Z:",res[2,3])# z
 		return res
 
-createTransforms([45,10,0,0,0,0],"LArm")
+#print(createTransforms([90,0,0,0,0,0],"RArm"))
