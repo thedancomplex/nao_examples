@@ -24,3 +24,11 @@
 23’RElbowRoll', 
 24’RWristYaw', 
 25’RHand']
+
+Youtube link for nao Inverse Kinematics:
+https://youtu.be/NNvMeqTa_r0
+
+Code on branch feature/FK in files forwardKinematics.py, jacobianInverseExample.py, and motion_poseZero.py
+
+
+
