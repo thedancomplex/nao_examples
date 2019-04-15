@@ -53,8 +53,10 @@ def main(robotIP):
     pTargetAnglesR = pTargetAngles0R"""
 
     #[115.59515097  20.11797839  20.11797839 -76.84603986   0.        ]
-    pTargetAngles0L = [ (75),12.21749182,-90, -55.51705609, 90 ] 
-    pTargetAngles1L = [ (75),12.21749182,-90, -70.51705609, 90 ] 
+    offset = -10
+    pTargetAngles0L = [ (75),12.21749182,-90, -55.51705609+offset, 90 ] 
+    pTargetAngles1L = [ (75),12.21749182,-90, -70.51705609+offset, 90 ] 
+
     #pTargetAngles0Lfk = [ (96.99678999),10.55418621,10.55418621,-40.52489326, 0 ]
     
     pTargetAnglesL = pTargetAngles0L
