@@ -68,16 +68,14 @@ void loop() {
       Serial.write(0xFF);
       Serial.write(i&0xFF);
       Serial.write(0x00);
-      sprintf(dat, "%08lx", (unsigned long)tick & 0xFFFFFFFF);
+      sprintf(dat, "%08lx", (unsigned long)micros() & 0xFFFFFFFF);
       //Serial.println("");
       Serial.write(dat);
       if(i == LButton){
         countL++;
-        if(countL
       }
       else if(i == NButton){
         countR++;
-        
       }
       if(0 == count){
         tick = micros();
