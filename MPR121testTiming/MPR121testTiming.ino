@@ -35,6 +35,14 @@ uint16_t LButton = 1;// Left button is the positive end
 uint16_t NButton = 0;// N button will be negative
 char packet[8];
 //packet[1] = 255;
+unsigned long tick,tock,lastTouched = 0;
+unsigned long ave,sum =0;
+
+int countL,countR = 0;
+int start,stopBit = 0;
+char dat[8];
+
+int aveCount = 0;
 
 void setup() {
   Serial.begin(115200);
@@ -57,68 +65,52 @@ void setup() {
 void loop() {
   // Get the currently touched pads
   currtouched = cap.touched();
-  int countL,countR = 0;
-  char dat[8];
-  unsigned long tick,tock;
+
+  if(!stopBit){
   for (uint8_t i=0; i<3; i++) { // can make this only loop through 0-2
+    if(start==1 && (((3*ave) + lastTouched) < micros())) {
+      Serial.println("TIMEOUT");
+    }
+
+    
     // it if *is* touched and *wasnt* touched before, alert!
     if ((currtouched & _BV(i)) && !(lasttouched & _BV(i)) ) {
+      
       //Serial.print(i); Serial.println(" touched");
-      Serial.write(0xFF);
+      /*Serial.write(0xFF);
       Serial.write(0xFF);
       Serial.write(i&0xFF);
       Serial.write(0x00);
       sprintf(dat, "%08lx", (unsigned long)micros() & 0xFFFFFFFF);
       //Serial.println("");
-      Serial.write(dat);
-      if(i == LButton){
-        countL++;
-      }
-      else if(i == NButton){
-        countR++;
-      }
+      Serial.write(dat);*/
+      
       if(0 == count){
         tick = micros();
+        lastTouched = tick;
         count++;
         buttonPressed = i;
-        /*Serial.write(0xFF);
-        Serial.write(0xFF);
-        Serial.write(i&0xFF);
-        Serial.write(0x00);
-        sprintf(dat, "%08lx", (unsigned long)tick & 0xFFFFFFFF);
-        //Serial.println("");
-        Serial.write(dat);*/
-        //Serial.println("");
-        //Serial.println(tick);
-      } 
+      }
       else if(1 == count && (i != buttonPressed)){
+        start =1;
         tock = micros();
+        lastTouched = tock;
+        //Serial.print("Time Difference: ");
         /*Serial.write(0xFF);
         Serial.write(0xFF);
-        Serial.write(i & 0xFF);
-        Serial.write(0x00);
-        sprintf(dat, "%08lx", (unsigned long)tock & 0xFFFFFFFF);
-        Serial.write(dat);*/
-
-        //Serial.print("Time Difference: ");
-        if(tock - tick > 0){
-          Serial.write(0xFF);
-          Serial.write(0xFF);
-          Serial.write(0x03);
-          if(i == NButton){
-            Serial.write(0x00);
-          } else if (i == LButton){
-            Serial.write(0x01);
-          }
-          sprintf(dat, "%08lx", (unsigned long)(tock-tick) & 0xFFFFFFFF);
-          Serial.write(dat);
-        }
+        Serial.write(0x03);
         if(i == NButton){
-          //Serial.write((tock - tick));
+          Serial.write(0x00);
         } else if (i == LButton){
-          //Serial.write("-");
-          //Serial.write((tock - tick));
-        }
+          Serial.write(0x01);
+        }*/
+        unsigned long res = tock-tick;
+        sprintf(dat, "%08lx", (unsigned long)(res) & 0xFFFFFFFF);
+        //Serial.write(dat);
+        sum += res;
+        aveCount+=1;
+        ave = sum/aveCount;
+      
         
         count = 0;
       }
@@ -128,11 +120,7 @@ void loop() {
       }
       
     }
-    // if it *was* touched and now *isnt*, alert!
-    if (!(currtouched & _BV(i)) && (lasttouched & _BV(i)) ) {
-      //Serial.print(i); Serial.println(" released");
-      
-    }
+  }
   }
 
   // reset our state
