@@ -40,7 +40,7 @@ unsigned long ave,sum =0;
 
 int countL,countR = 0;
 int start,stopBit = 0;
-char dat[8];
+
 
 int aveCount = 0;
 
@@ -65,11 +65,11 @@ void setup() {
 void loop() {
   // Get the currently touched pads
   currtouched = cap.touched();
-
+char dat[8];
   if(!stopBit){
   for (uint8_t i=0; i<3; i++) { // can make this only loop through 0-2
     if(start==1 && (((3*ave) + lastTouched) < micros())) {
-      stopBit = 1;
+      //Serial.println("TIMEOUT");
     }
 
     
@@ -106,7 +106,7 @@ void loop() {
         }
         unsigned long res = tock-tick;
         sprintf(dat, "%08lx", (unsigned long)(res) & 0xFFFFFFFF);
-        //Serial.write(dat);
+        Serial.write(dat);
         sum += res;
         aveCount+=1;
         ave = sum/aveCount;
