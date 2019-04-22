@@ -54,7 +54,7 @@ def main(robotIP):
     motionProxy.angleInterpolationWithSpeed(pNames, pTargetAngles, pMaxSpeedFraction)
 
     delta = 0.0
-    pMaxSpeedFraction = 0.5
+    pMaxSpeedFraction = 1.0
     while True:
       if delta > 0.0: 
         delta = 0.0
@@ -64,7 +64,7 @@ def main(robotIP):
       tick = time.time()
       motionProxy.angleInterpolationWithSpeed(pNames, pTargetAngles, pMaxSpeedFraction)
       tock = time.time()
-      print tick + " " + tock-tick
+      print tick 
       time.sleep(0.5)
 
 
