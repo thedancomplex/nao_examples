@@ -69,7 +69,7 @@ void loop() {
   if(!stopBit){
   for (uint8_t i=0; i<3; i++) { // can make this only loop through 0-2
     if(start==1 && (((3*ave) + lastTouched) < micros())) {
-      Serial.println("TIMEOUT");
+      stopBit = 1;
     }
 
     
@@ -77,13 +77,13 @@ void loop() {
     if ((currtouched & _BV(i)) && !(lasttouched & _BV(i)) ) {
       
       //Serial.print(i); Serial.println(" touched");
-      /*Serial.write(0xFF);
+      Serial.write(0xFF);
       Serial.write(0xFF);
       Serial.write(i&0xFF);
       Serial.write(0x00);
       sprintf(dat, "%08lx", (unsigned long)micros() & 0xFFFFFFFF);
       //Serial.println("");
-      Serial.write(dat);*/
+      Serial.write(dat);
       
       if(0 == count){
         tick = micros();
@@ -96,14 +96,14 @@ void loop() {
         tock = micros();
         lastTouched = tock;
         //Serial.print("Time Difference: ");
-        /*Serial.write(0xFF);
+        Serial.write(0xFF);
         Serial.write(0xFF);
         Serial.write(0x03);
         if(i == NButton){
           Serial.write(0x00);
         } else if (i == LButton){
           Serial.write(0x01);
-        }*/
+        }
         unsigned long res = tock-tick;
         sprintf(dat, "%08lx", (unsigned long)(res) & 0xFFFFFFFF);
         //Serial.write(dat);
