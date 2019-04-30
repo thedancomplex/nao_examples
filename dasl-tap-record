@@ -15,6 +15,12 @@ Install()
 	sudo cp $MAIN_BIN_FILE $INSTALL_BIN_DIR
 }
 
+InstallDep()
+{
+	sudo apt-get update
+	sudo apt-get install screen
+	sudo apt-get install python-serial
+}
 Uninstall()
 {
 	sudo rm -rf $INSTALL_DIR
@@ -23,7 +29,8 @@ Uninstall()
 Start()
 {
 	cd $INSTALL_DIR
-	screen -S $SCREEN_GET_TAPS -d -m python $INSTALL_DIR/$TAP_RECORD_FILE $TOUCH_PORT $RECORD_DIR
+	python $INSTALL_DIR/$TAP_RECORD_FILE $TOUCH_PORT $RECORD_DIR
+	#screen -S $SCREEN_GET_TAPS -d -m python $INSTALL_DIR/$TAP_RECORD_FILE $TOUCH_PORT $RECORD_DIR
 }
 
 Stop()
@@ -50,6 +57,7 @@ ShowUsage()
 	echo '                  example: /dev/ttyACM1'
 	echo 'stop            - Stops the program'
 	echo 'install         - Installs the program'
+	echo 'install-dep     - Install the programs dependencies'
 	echo 'uninstall       - Uninstalls the program'
 }
 
@@ -62,6 +70,9 @@ case "$1" in
 	;;
 	'install' )
 		Install
+	;;
+	'install-dep' )
+		InstallDep
 	;;
 	'uninstall' )
 		Uninstall

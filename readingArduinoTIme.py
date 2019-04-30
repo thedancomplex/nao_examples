@@ -4,9 +4,15 @@ import time
 import struct
 import os
 import datetime
+import sys
 
 port = "/dev/ttyACM1"
-
+record_location = os.system('pwd')
+print '---------'
+if (len(sys.argv) > 1):
+  port = sys.argv[1]
+  print sys.argv[1]
+print '---------'
 ard = serial.Serial(port,115200,timeout=5)
 
 ard.flush()
@@ -14,7 +20,7 @@ ard.flush()
 f = open(str(datetime.datetime.now().isoformat())+".log","w")
 f.write("test")
 
-os.system('./recordAudio.sh -n '+str(datetime.datetime.now().isoformat())+ '& echo $! > /tmp/pid')
+os.system('./recordAudio.sh -n '+record_location+str(datetime.datetime.now().isoformat())+ '& echo $! > /tmp/pid')
 
 def unpackULong(msg):
 	res = 0
