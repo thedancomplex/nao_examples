@@ -37,6 +37,7 @@ char packet[8];
 //packet[1] = 255;
 unsigned long tick,tock,lastTouched = 0;
 unsigned long ave,sum =0;
+int timeout = 0;
 
 int countL,countR = 0;
 int start,stopBit = 0;
@@ -65,17 +66,20 @@ void setup() {
 void loop() {
   // Get the currently touched pads
   currtouched = cap.touched();
-char dat[8];
-  if(!stopBit){
+  char dat[8];
   for (uint8_t i=0; i<3; i++) { // can make this only loop through 0-2
-    if(start==1 && (((3*ave) + lastTouched) < micros())) {
-      //Serial.println("TIMEOUT");
+    if(start==1 && (((3*ave) + lastTouched) < micros()) && timeout == 0) {
+      Serial.write(0xFF);
+      Serial.write(0xFF);
+      Serial.write(5&0xFF);
+      count = 0;
+      timeout = 1; // just so that it will not send the timeout forever 
+      
     }
-
     
     // it if *is* touched and *wasnt* touched before, alert!
     if ((currtouched & _BV(i)) && !(lasttouched & _BV(i)) ) {
-      
+      timeout = 0;
       //Serial.print(i); Serial.println(" touched");
       Serial.write(0xFF);
       Serial.write(0xFF);
@@ -110,17 +114,15 @@ char dat[8];
         sum += res;
         aveCount+=1;
         ave = sum/aveCount;
-      
         
         count = 0;
       }
-      else if(1 == count && (i == buttonPressed)){
+      else if(1 == count && (i == buttonPressed)){ // can probably get rid of this
         count = 1;
         buttonPressed = i;//throw out this button press
       }
       
     }
-  }
   }
 
   // reset our state
