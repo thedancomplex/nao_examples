@@ -68,7 +68,7 @@ void loop() {
   currtouched = cap.touched();
   char dat[8];
   for (uint8_t i=0; i<3; i++) { // can make this only loop through 0-2
-    if(start==1 && (((3*ave) + lastTouched) < micros()) && timeout == 0) {
+    if(start==1 && ((1000000 + lastTouched) < micros()) && timeout == 0) {
       Serial.write(0xFF);
       Serial.write(0xFF);
       Serial.write(5&0xFF);
