@@ -1,0 +1,74 @@
+#!/bin/bash
+INSTALL_BIN_DIR=/usr/bin/
+INSTALL_DIR=/etc/dasl-tap-record/
+TAP_RECORD_FILE=readingArduinoTIme.py
+AUDIO_RECORD_FILE=recordAudio.sh
+MAIN_BIN_FILE=dasl-tap-record
+SCREEN_GET_TAPS=screenDaslRecordTaps
+RECORD_DIR=$(pwd)
+TOUCH_PORT=/dev/ttyACM1
+Install()
+{
+	sudo mkdir -p $INSTALL_DIR
+	sudo cp $TAP_RECORD_FILE $INSTALL_DIR
+	sudo cp $AUDIO_RECORD_FILE $INSTALL_DIR
+	sudo cp $MAIN_BIN_FILE $INSTALL_BIN_DIR
+}
+
+Uninstall()
+{
+	sudo rm -rf $INSTALL_DIR
+}
+
+Start()
+{
+	cd $INSTALL_DIR
+	screen -S $SCREEN_GET_TAPS -d -m python $INSTALL_DIR/$TAP_RECORD_FILE $TOUCH_PORT $RECORD_DIR
+}
+
+Stop()
+{
+	screen -S $SCREEN_GET_TAPS -p 0 -x quit
+}
+
+ShowUsage()
+{
+	echo '--------------------------------------------'
+	echo '--------------------------------------------'
+	echo '-------- DASL Tap Time Recorder ------------'
+	echo '--- Daniel M. Lofaro (dan@danlofaro.com) ---'
+	echo '---- Alex Maxseiner (amaxsein@gmu.edu) -----'
+	echo '--------------------------------------------'
+	echo '--------------------------------------------'
+	echo
+	echo 'Records tap timing file and start time audio'
+	echo 'file in your current directory'
+	echo
+	echo 'start           - Starts the program'
+	echo '  Options:'
+	echo '      port      - sets the port number'
+	echo '                  example: /dev/ttyACM1'
+	echo 'stop            - Stops the program'
+	echo 'install         - Installs the program'
+	echo 'uninstall       - Uninstalls the program'
+}
+
+case "$1" in
+	'start' )
+		Start
+	;;
+	'stop' )
+		Stop
+	;;
+	'install' )
+		Install
+	;;
+	'uninstall' )
+		Uninstall
+	;;
+	* )
+		ShowUsage
+		exit 1
+	;;
+esac
+exit 0
