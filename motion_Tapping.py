@@ -54,8 +54,8 @@ def main(robotIP):
 
     #[115.59515097  20.11797839  20.11797839 -76.84603986   0.        ]
     offset = -10
-    pTargetAngles0L = [ (75),12.21749182,-90, -55.51705609+offset, 90 ] 
-    pTargetAngles1L = [ (75),12.21749182,-90, -70.51705609+offset, 90 ] 
+    pTargetAngles0L = [ (75),12.21749182,-90, -63.51705609+offset, 90 ] 
+    pTargetAngles1L = [ (75),12.21749182,-90, -80.51705609+offset, 90 ] 
 
     #pTargetAngles0Lfk = [ (96.99678999),10.55418621,10.55418621,-40.52489326, 0 ]
     
@@ -67,7 +67,7 @@ def main(robotIP):
     count = 0
     while(True):
 	    #pTargetAnglesPrime = [ 79.65702954,-12.21749182,55.86600865, 40.51705609,0]
-	    if(count==1):
+	    if(count==3):
 		if(pTargetAngles0L==pTargetAnglesL):
 			pTargetAnglesL = pTargetAngles1L
 		        #resultingT = forwardKinematics.createTransforms(pTargetAngles1Rfk,pRArm)
