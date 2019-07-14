@@ -61,6 +61,7 @@ void setup() {
   }
   //Serial.println("MPR121 found!");
   //Serial.write(char(0xFF));
+   cap.setThresholds(1,1);
 }
 
 void loop() {
