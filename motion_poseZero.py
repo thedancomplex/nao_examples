@@ -7,6 +7,7 @@ from naoqi import ALProxy
 import time
 import math
 import forwardKinematics 
+import qi
 
 def StiffnessOn(proxy):
     # We use the "Body" name to signify the collection of all joints
@@ -15,11 +16,13 @@ def StiffnessOn(proxy):
     pTimeLists = 1.0
     proxy.stiffnessInterpolation(pNames, pStiffnessLists, pTimeLists)
 
-
 def main(robotIP):
     # Init proxies.
     try:
         motionProxy = ALProxy("ALMotion", robotIP, 9559)
+	session = qi.Session()
+	session.connect("tcp://" + robotIP + ":" + str(9559))
+        memory_service = session.service("ALMemory")
     except Exception, e:
         print "Could not create proxy to ALRobotPosture"
         print "Error was: ", e
@@ -59,32 +62,38 @@ def main(robotIP):
     pTargetAnglesL = pTargetAngles0L
     pTargetAnglesRadR = [0.0] * 6
     pTargetAnglesRadL = [0.0] * 6
+    csvTiming = open("testTiming.csv","w")
+    startingTime = time.time()
     count = 0
     while(True):
 	    #pTargetAnglesPrime = [ 79.65702954,-12.21749182,55.86600865, 40.51705609,0]
 	    if(count==10):
 		if(pTargetAngles0R==pTargetAnglesR):
-			pTargetAnglesR=pTargetAngles1R
-			pTargetAnglesL=pTargetAngles1L
+			pTargetAnglesR = pTargetAngles1R
+			pTargetAnglesL = pTargetAngles1L
 		        resultingT = forwardKinematics.createTransforms(pTargetAngles1Lfk,pLArm)
-			print("End Effector X FK:",resultingT[0,3])# x
-			print("End Effector Y FK:",(resultingT[1,3]))# y
-			print("End Effector Z FK:",resultingT[2,3])# z
+			#print("End Effector X FK:",resultingT[0,3])# x
+			#print("End Effector Y FK:",(resultingT[1,3]))# y
+			#print("End Effector Z FK:",resultingT[2,3])# z
 		        resultingT = forwardKinematics.createTransforms(pTargetAngles1Rfk,pRArm)
-			print("End Effector X FK:",resultingT[0,3])# x
-			print("End Effector Y FK:",(resultingT[1,3]))# y
-			print("End Effector Z FK:",resultingT[2,3])# z
+			#print("End Effector X FK:",resultingT[0,3])# x
+			#print("End Effector Y FK:",(resultingT[1,3]))# y
+			#print("End Effector Z FK:",resultingT[2,3])# z
 		else:
-			pTargetAnglesR=pTargetAngles0R
-			pTargetAnglesL=pTargetAngles0L	
+			pTargetAnglesR = pTargetAngles0R
+			pTargetAnglesL = pTargetAngles0L	
 		        resultingT = forwardKinematics.createTransforms(pTargetAngles0Lfk,pLArm)
-			print("End Effector X FK:",resultingT[0,3])# x
-			print("End Effector Y FK:",(resultingT[1,3]))# y
-			print("End Effector Z FK:",resultingT[2,3])# z
+			#print("End Effector X FK:",resultingT[0,3])# x
+			#print("End Effector Y FK:",(resultingT[1,3]))# y
+			#print("End Effector Z FK:",resultingT[2,3])# z
 		        resultingT = forwardKinematics.createTransforms(pTargetAngles0Rfk,pRArm)
-			print("End Effector X FK:",resultingT[0,3])# x
-			print("End Effector Y FK:",(resultingT[1,3]))# y
-			print("End Effector Z FK:",resultingT[2,3])# z		
+			#print("End Effector X FK:",resultingT[0,3])# x
+			#print("End Effector Y FK:",(resultingT[1,3]))# y
+			#print("End Effector Z FK:",resultingT[2,3])# z
+        	batPerc = memory_service.getData("Device/SubDeviceList/Battery/Charge/Sensor/Value")
+        	#print("battery%",batPerc)
+		count = 0 
+		csvTiming.write(str(time.time()-startingTime)+","+str(batPerc) + "\n")		
 		count = 0
 		
 	    """pTargetAngles[0] = 52.98565192
@@ -107,13 +116,14 @@ def main(robotIP):
 	    motionProxy.setAngles(pLArm, pTargetAnglesRadL, pMaxSpeedFraction)
 
 	    encoderAngles = motionProxy.getAngles(pRArm,True)
-	    print("Right arm encoders: ",encoderAngles)
+	    #print("Right arm encoders: ",encoderAngles)
 	    encoderAngles = motionProxy.getAngles(pLArm,True)
-	    print("Left Arm encoders: ",encoderAngles)
+	    #print("Left Arm encoders: ",encoderAngles)
 	    #[ 46.09250502 -33.40408134  51.14905024  88.5          0.        ]
 	    count += 1
 	    time.sleep(.2)
 	    #pTargetAnglesPrime = [ (60.95316587),-29.30072426,57.89848256,88.5,0]
+
 
     #print(encoderAngles)
 

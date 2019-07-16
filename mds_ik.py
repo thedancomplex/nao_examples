@@ -49,12 +49,12 @@ threshold = .0025
 ## l3 = .18159  # elbow to wrist roll
 
 
-UpperArmLength  =105.0
-ElbowOffsetY    =15.0
-LowerArmLength  =55.95
-HandOffsetX 	=57.75
-ShoulderOffsetY =98.0
-HandOffsetZ     =12.31
+UpperArmLength  = 105.0
+ElbowOffsetY    = 15.0
+LowerArmLength  = 55.95
+HandOffsetX 	= 57.75
+ShoulderOffsetY = 98.0
+HandOffsetZ     = 12.31
 
 l1 = ShoulderOffsetY#0.2455100   # center of body to shoulder
 l2 = UpperArmLength#0.2825750   # shoulder to eblow
@@ -500,4 +500,4 @@ def getIK6dof(eff_joint_space_current, eff_end, arm):
 
 ##  print eff_dist_to_end
  return eff_joint_space_current
-print(getFkArm([np.radians(70),np.radians(10),np.radians(10),np.radians(10),np.radians(0),0],'right'))
+#print(getFkArm([np.radians(80),np.radians(-9),np.radians(60),np.radians(80),np.radians(0),0],'right'))

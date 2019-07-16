@@ -145,14 +145,15 @@ for a in range(10000):
 	distanceOffset = numpy.sqrt(math.pow(temp[0],2) + math.pow(temp[1],2) + math.pow(temp[2],2))
 	print "new points",newP
 	print "distance offset",distanceOffset
-	if(distanceOffset<1 and found ==0):
+	if(distanceOffset < 1 and found == 0):
 		print "found it at: ",a
 		firstJointSet = thetaNew
 		print(thetaNew)
-		desiredPoint = OG + numpy.array([50,0,0])
+		desiredPoint = OG + numpy.array([0,0,-50])
 		found += 1
 	elif(distanceOffset<1 and found ==1):
 		print "found it at: ",a
+		print "found for ",Arm_t
 		print(thetaNew)
 		print(firstJointSet)
 		print(desiredPoint)
