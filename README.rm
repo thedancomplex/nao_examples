@@ -1,3 +1,33 @@
+# DASL-TAP-RECORD
+This is the software for the test-tap interface.
+
+## Get Started
+### Prerequisites
+You will need screeon, python serial for human-human interactions.
+'''
+sudo apt-get update
+sudo apt-get install screen
+sudo apt-get install python-serial
+'''
+For human-robot interactions, you will need the packages for human-human interactions and naopy and numpy
+'''
+sudo apt-get update
+sudo apt-get install python-numpy
+'''
+For Naoqi for python refer to the follow website
+* [NAOqi](http://doc.aldebaran.com/2-5/dev/python/install_guide.html) - aldebaran documentation
+
+### Run the software
+'''
+dasl-tap-record install
+dasl-tap-record start # this will start the audio recording and data loggin script
+'''
+to stop CTRL-C or 
+'''
+dasl-tap-record stop
+'''
+
+
 0[‘HeadYaw', 
 1’HeadPitch', 
 2’LShoulderPitch', 
