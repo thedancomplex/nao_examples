@@ -22,7 +22,8 @@ For Naoqi for python refer to the follow website
 dasl-tap-record install
 dasl-tap-record start # this will start the audio recording and data loggin script
 ```
-to stop CTRL-C or 
+to stop 
 ```
 dasl-tap-record stop
 ```
+or CTRL-C if not sent to the background.
