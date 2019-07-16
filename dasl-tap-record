@@ -1,7 +1,7 @@
 #!/bin/bash
 INSTALL_BIN_DIR=/usr/bin/
 INSTALL_DIR=/etc/dasl-tap-record/
-TAP_RECORD_FILE=readingArduinoTIme.py
+TAP_RECORD_FILE=readingArduinoTime.py
 AUDIO_RECORD_FILE=recordAudio.sh
 MAIN_BIN_FILE=dasl-tap-record
 SCREEN_GET_TAPS=screenDaslRecordTaps

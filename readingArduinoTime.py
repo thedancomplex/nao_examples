@@ -7,7 +7,7 @@ from datetime import datetime
 import sys
 
 port = "/dev/ttyACM1"
-record_location = os.system('pwd')+"/logs"
+record_location = str(os.system('pwd'))+"/logs"
 print '---------'
 if (len(sys.argv) > 1):
   port = sys.argv[1]
