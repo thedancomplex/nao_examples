@@ -1,0 +1,31 @@
+Bandicam usage:
+
+Click on webcam: 
+Check "Add webcam overlay to video"
+Select HD USB Camera fromt the drop down menu
+Select 640x480,120fps, MJPG
+Presss OK
+
+For sound:
+Click on Microphone:
+Check "Record sound"
+Under Primary Sound Device select Microphone (USB PnP Sound Device) from the drop down menu
+Scale the volume bar to 20%
+
+Select video on left side bar:
+Under format click Settings
+Size: Full Size
+FPS: 120
+Codec MPEG-4
+Bitrate: 10000
+Click the three dots next to FPS:
+Select Prefer CFR
+
+Audio Settings:
+Format: AAC
+Bitrate: 192 kbps
+Channels: Stereo
+Frequency: 44100Hz
+
+
+Then click record and 120 fps video will be recorded.
