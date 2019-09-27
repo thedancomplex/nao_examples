@@ -69,7 +69,7 @@ void loop() {
   currtouched = cap.touched();
   char dat[8];
   for (uint8_t i=0; i<3; i++) { // can make this only loop through 0-2
-    if(start==1 && ((1000000 + lastTouched) < micros()) && timeout == 0) {
+    if(start==1 && ((1000000 + lastTouched) < micros()) && timeout == 0) { // this is the timeout case !!!
       Serial.write(0xFF);
       Serial.write(0xFF);
       Serial.write(5&0xFF);
@@ -123,9 +123,16 @@ void loop() {
         buttonPressed = i;//throw out this button press
       }
       
+    } else {
+      // send a zero here 
+      // we are "sampling"
+      Serial.write(0xFF);
+      Serial.write(0xFF);
+      Serial.write(0x07);
+      
     }
   }
-
+  delay(10);
   // reset our state
   lasttouched = currtouched;
 

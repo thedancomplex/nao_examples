@@ -7,7 +7,7 @@ from datetime import datetime
 import sys
 
 port = "/dev/ttyACM1"
-record_location = str(os.system('pwd'))+"/logs"
+record_location = str(os.getcwd())+"/logs"
 print '---------'
 if (len(sys.argv) > 1):
   port = sys.argv[1]
@@ -58,12 +58,21 @@ try:
                     			tDiff = 1
                 		else:
                     			tDiff = 0
+				if(buf3[0] == 0):
+					f.write(str(time.time()) + " right"+"\r\n")
+				elif(buf3[0] == 1):
+					f.write(str(time.time()) + " left"+"\r\n")
 				if(buf3[0] == 5):
 					#print("tapping timeout")
                     			print("9999999")
 					timeout = 1
 					buf4 = 0
+				elif(buf3[0] == 7):
+                                        f.write(str(time.time())+" zero"+"\r\n")
+                                        print(time.time())
+
 				else:
+					print(buf3[0])
 					buf4 = struct.unpack('>B', ard.read(1))[0]
 					#print("negative phase",buf4)
 					msg = ard.read(8)
