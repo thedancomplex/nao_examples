@@ -73,25 +73,34 @@ void loop() {
       Serial.write(0xFF);
       Serial.write(0xFF);
       Serial.write(5&0xFF);
-      count = 0;
+      //count = 0;
       timeout = 1; // just so that it will not send the timeout forever 
       
-    }
-    
+    } 
+
+
     // it if *is* touched and *wasnt* touched before, alert!
     if ((currtouched & _BV(i)) && !(lasttouched & _BV(i)) ) {
       timeout = 0;
-      //Serial.print(i); Serial.println(" touched");
+      //Serial.0(i); Serial.println(" touched");
       Serial.write(0xFF);
       Serial.write(0xFF);
       Serial.write(i&0xFF);
       Serial.write(0x00);
       sprintf(dat, "%08lx", (unsigned long)micros() & 0xFFFFFFFF);
-      //Serial.println("");
+      
       Serial.write(dat);
       
       if(0 == count){
         tick = micros();
+        /*Serial.write(0xFF);
+        Serial.write(0xFF);
+        if(i == 0){
+          Serial.write(0x00);
+        } else {
+          Serial.write(0x01);
+        }*/
+        
         lastTouched = tick;
         count++;
         buttonPressed = i;
@@ -122,15 +131,11 @@ void loop() {
         count = 1;
         buttonPressed = i;//throw out this button press
       }
+      if(i == 2){
+        //Serial.flush();
+      }
       
-    } else {
-      // send a zero here 
-      // we are "sampling"
-      Serial.write(0xFF);
-      Serial.write(0xFF);
-      Serial.write(0x07);
-      
-    }
+    } 
   }
   delay(10);
   // reset our state
